@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="normalize.css">
+    <title>Postagem de Blog</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Crie sua Postagem</h1>
+
+        <div class="success-message" id="successMessage">
+            Postagem criada com sucesso!
+        </div>
+
+        <form id="postForm" class="post-form">
+            <div class="form-group">
+                <label for="postTitle">Título</label>
+                <input type="text" id="postTitle" placeholder="Digite o título da postagem" required>
+            </div>
+
+            <div class="form-group">
+                <label for="postContent">Conteúdo</label>
+                <textarea id="postContent" placeholder="Escreva o conteúdo da postagem..." required></textarea>
+            </div>
+
+            <button type="submit">Publicar Postagem</button>
+        </form>
+
+        <div class="post-result">
+            <h2 class="post-title" id="renderedTitle"></h2>
+            <p class="post-content" id="renderedContent"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Seletores dos elementos
+            const postForm = document.getElementById('postForm');
+            const postTitle = document.getElementById('postTitle');
+            const postContent = document.getElementById('postContent');
+            const renderedTitle = document.getElementById('renderedTitle');
+            const renderedContent = document.getElementById('renderedContent');
+            const successMessage = document.getElementById('successMessage');
+
+            // Evento de submit do formulário
+            postForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                // Criar o objeto com os dados do post
+                const data = {
+                    title: postTitle.value,
+                    body: postContent.value,
+                    userId: 1
+                };
+
+                // Configurações do fetch
+                const options = {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8'
+                    }
+                };
+
+                // Enviar a requisição para a API
+                fetch('https://jsonplaceholder.typicode.com/posts', options)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro na requisição');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Renderizar os dados retornados
+                        renderedTitle.textContent = data.title;
+                        renderedContent.textContent = data.body;
+
+                        // Mostrar mensagem de sucesso
+                        successMessage.style.display = 'block';
+
+                        // Limpar o formulário
+                        postForm.reset();
+
+                        // Esconder a mensagem após 3 segundos
+                        setTimeout(() => {
+                            successMessage.style.display = 'none';
+                        }, 3000);
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert('Ocorreu um erro ao enviar a postagem. Por favor, tente novamente.');
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>
